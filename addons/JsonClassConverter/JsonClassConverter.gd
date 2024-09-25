@@ -6,6 +6,8 @@ static func check_dir(path: String) -> void:
 	if !DirAccess.dir_exists_absolute(path):
 		DirAccess.make_dir_absolute(path)
 
+const TYPES_SUPPORTED_BY_JSON = [Variant.Type.TYPE_STRING, Variant.Type.TYPE_INT, Variant.Type.TYPE_FLOAT, Variant.Type.TYPE_BOOL]
+
 #region Json to Class
 
 static func json_file_to_dict(file_path: String, security_key: String = ""):
@@ -131,11 +133,11 @@ static func class_to_json(_class: Object) -> Dictionary:
 			elif property_value is Dictionary:
 				dictionary[property_name] = convert_dictionary_to_json(property_value)
 			elif property["type"] == TYPE_OBJECT and property_value != null and property_value.get_property_list():
-				dictionary[property.name] = class_to_json(property_value)
-			elif typeof(property_value) != Variant.Type.TYPE_STRING:
-				dictionary[property_name] = var_to_str(property_value)
-			else:
+				dictionary[property.name] = class_to_json(property_value)#
+			elif typeof(property_value) in TYPES_SUPPORTED_BY_JSON:
 				dictionary[property_name] = property_value
+			else:
+				dictionary[property_name] = var_to_str(property_value)
 	return dictionary
 
 # Helper function to recursively convert arrays
