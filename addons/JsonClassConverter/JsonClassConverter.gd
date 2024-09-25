@@ -38,8 +38,14 @@ static func json_string_to_class(json_string: String) -> Object:
 
 
 static func typed_value(value: Variant) -> Variant:
+	var blah = str_to_var("value")
 	if typeof(value) == Variant.Type.TYPE_STRING:
-		return str_to_var(value)
+		var typed_val = str_to_var(value)
+		if typed_val == null:
+			return value
+		else:
+			return typed_val
+			
 		
 	if typeof(value) == Variant.Type.TYPE_DICTIONARY:
 		return json_to_class(value)
@@ -126,8 +132,10 @@ static func class_to_json(_class: Object) -> Dictionary:
 				dictionary[property_name] = convert_dictionary_to_json(property_value)
 			elif property["type"] == TYPE_OBJECT and property_value != null and property_value.get_property_list():
 				dictionary[property.name] = class_to_json(property_value)
-			else:
+			elif typeof(property_value) != Variant.Type.TYPE_STRING:
 				dictionary[property_name] = var_to_str(property_value)
+			else:
+				dictionary[property_name] = property_value
 	return dictionary
 
 # Helper function to recursively convert arrays
